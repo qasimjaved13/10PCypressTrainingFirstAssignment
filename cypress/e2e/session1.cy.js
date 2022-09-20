@@ -1,43 +1,61 @@
 /// <reference types = "cypress"/>
 
-describe('Session 1', () => {
-    it('Registration', () => {
-        cy.visit('http://www.automationpractice.com')
-        cy.get('.login').click()
-        cy.get('.page-heading').contains('Authentication')
-        cy.get('.page-subheading').should('contain', 'Create an account')
-        let email = 'cypresstest' + Math.random(2)
-        cy.get('#email_create').type(email + '@gmail.com')
-        cy.get('#SubmitCreate').click()
-        cy.get('.page-subheading').should('contain', 'Your personal information')
-        cy.get('#id_gender1').click()
-        let fName = 'Qasim'
-        let lName = 'Javed'
-        cy.get('[name="customer_firstname"]').type(fName)
-        cy.get('[name="customer_lastname"]').type(lName)
-        cy.get('#passwd').type('Testing123!')
-        cy.get('#days').select('13')
-        cy.get('#months').select('October')
-        cy.get('[name="years"]').select('1992')
-        cy.get('#company').type('10Pearls')
-        cy.get('#address1').type('Test Address1')
-        cy.get('#address2').type('Test Address2')
-        cy.get('#city').type('Islamabad')
-        cy.get('#id_state').select('Arizona')
-        cy.get('#postcode').type('12345')
-        cy.get('#id_country').select('United States')
-        cy.get('#other').type('Test Additional Information')
-        cy.get('#phone').type('1234567890')
-        cy.get('[name="phone_mobile"]').type('9876543210')
-        cy.get('#alias').type('Test alias')
-        cy.get('#submitAccount').click()
-        cy.url().should('be.equal', 'http://automationpractice.com/index.php?controller=my-account')
-        cy.get('.navigation_page').should('be.visible')
-        let username;
-        cy.get('.account > span').then(($elem) => {
-            username = $elem.text()
-            expect(username).to.equal(fName + ' ' + lName)
+
+describe('Session 2', () => {
+
+    beforeEach(() => {
+        cy.fixture('example').then((data) => {
+            cy.visit('http://www.automationpractice.com')
+            cy.get(data.loginBtn).click()
         })
-        
+    })
+
+    const email = 'cypresstest' + Math.random(2)
+    let username, fName = 'Qasim', lName = 'Javed'
+
+    it('Registration', () => {
+        cy.fixture('example').then((data) => {
+            cy.get(data.pageHeading).contains('Authentication')
+            cy.get(data.pageSubHeading).should('contain', 'Create an account')
+            cy.get(data.emailTxt).type(email + '@gmail.com')
+            cy.get(data.submitBtn).click()
+            cy.get(data.pageSubHeading).should('contain', 'Your personal information')
+            cy.get(data.genderMale).click()
+            
+            cy.get(data.firstNameTxt).type(fName)
+            cy.get(data.lastNameTxt).type(lName)
+            cy.get(data.passwordTxt).type('Testing123!')
+            cy.get(data.days).select('13')
+            cy.get(data.months).select('October')
+            cy.get(data.year).select('1992')
+            cy.get(data.company).type('10Pearls')
+            cy.get(data.address1).type('Test Address1')
+            cy.get(data.address2).type('Test Address2')
+            cy.get(data.city).type('Islamabad')
+            cy.get(data.state).select('Arizona')
+            cy.get(data.postcode).type('12345')
+            cy.get(data.country).select('United States')
+            cy.get(data.other).type('Test Additional Information')
+            cy.get(data.phone).type('1234567890')
+            cy.get(data.mobile).type('9876543210')
+            cy.get(data.alias).type('Test alias')
+            cy.get(data.submitAccountBtn).click()
+            cy.url().should('be.equal', 'http://automationpractice.com/index.php?controller=my-account')
+            cy.get(data.navigationPage).should('be.visible')
+            cy.get(data.userName).then(($elem) => {
+                username = $elem.text()
+                expect(username).to.equal(fName + ' ' + lName)
+            })
+        })
+    })
+
+    it('Login', () => {
+        cy.fixture('example').then((data) => {
+            cy.login(email, "Testing123!")
+            cy.get(data.userName).then(($elem) => {
+                username = $elem.text()
+                expect(username).to.equal(fName + ' ' + lName)
+            })
+        })
     })
 })
